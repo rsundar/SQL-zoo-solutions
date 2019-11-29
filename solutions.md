@@ -6,7 +6,7 @@ Link: [sqlzoo](https://www.sqlzoo.net)
 Author: Rohan Sundar
 Github: [rsundar](https://www.github.com/rsundar)
 
-## SELECT Basics
+## SELECT Basics Solutions
 [sqlzoo.net/wiki/SELECT_basics](sqlzoo.net/wiki/SELECT_basics)
 
 #### 1. Introducing the world table of countries
@@ -39,7 +39,7 @@ SELECT name, area FROM world
   WHERE area BETWEEN 200000 AND 250000
 ```
 
-## SELECT from WORLD Tutorial
+## SELECT from WORLD Solutions
 [https://sqlzoo.net/wiki/SELECT_from_WORLD_Tutorial](https://sqlzoo.net/wiki/SELECT_from_WORLD_Tutorial)
 
 #### Example Data
@@ -200,7 +200,7 @@ AND name LIKE '%o%'
 AND name LIKE '%u%'
 ```
 
-## SELECT from Nobel Tutorial
+## SELECT from Nobel Solutions
 [https://sqlzoo.net/wiki/SELECT_from_Nobel_Tutorial](https://sqlzoo.net/wiki/SELECT_from_Nobel_Tutorial)
 
 #### 1. Winners from 1950
@@ -352,3 +352,130 @@ ORDER BY
 CASE WHEN subject IN ('Physics', 'Chemistry') THEN 1 ELSE 0 END, subject, winner;
 ```
 
+## SELECT within SELECT Solutions
+[https://sqlzoo.net/wiki/SELECT_within_SELECT_Tutorial](https://sqlzoo.net/wiki/SELECT_within_SELECT_Tutorial)
+
+Table Structure: `world(name, continent, area, population, gdp)`
+
+#### 1. Bigger than Russia
+List each country name where the population is larger than that of 'Russia'.
+
+``` sql
+SELECT name FROM world
+  WHERE population >
+     (SELECT population FROM world
+      WHERE name='Russia');
+```
+
+#### 2. Richer than UK
+Show the countries in Europe with a per capita GDP greater than 'United Kingdom'.
+
+``` sql
+SELECT name
+FROM world
+WHERE continent = 'Europe'
+  AND gdp/population > (SELECT gdp/population
+    FROM world
+    WHERE name = 'United Kingdom');
+```
+
+#### 3. Neighbors of Argentina and Australia
+List the name and continent of countries in the continents containing either Argentina or Australia. Order by name of the country.
+
+``` sql
+SELECT name, continent
+FROM world
+WHERE continent IN (
+  SELECT continent
+  FROM world
+  WHERE name IN ('Argentina', 'Australia')
+)
+ORDER BY name;
+```
+
+#### 4. Between Canada and Poland
+Which country has a population that is more than Canada but less than Poland? Show the name and the population.
+
+``` sql
+SELECT name, population
+FROM world
+WHERE population > (SELECT population FROM world WHERE name = 'Canada')
+  AND population < (SELECT population FROM world WHERE name = 'Poland');
+```
+
+#### 5. Percentages of Germany
+Germany (population 80 million) has the largest population of the countries in Europe. Austria (population 8.5 million) has 11% of the population of Germany.
+
+Show the name and the population of each country in Europe. Show the population as a percentage of the population of Germany.
+
+``` sql
+SELECT name, CONCAT(ROUND(population/(SELECT population FROM world WHERE name = 'Germany') * 100, 0), '%') AS '% of German Population'
+FROM world
+WHERE continent = 'Europe';
+```
+
+#### 6. Bigger than every country in Europe
+Which countries have a GDP greater than every country in Europe? Give the name only. (Some countries may have NULL GDP values).
+
+``` sql
+SELECT name
+FROM world
+WHERE gdp > ALL(
+  SELECT gdp
+  FROM world
+  WHERE continent = 'Europe'
+    AND gdp > 0);
+```
+
+#### 7. Largest in each continent
+Find the largest country (by area) in each continent, show the continent, the name and the area.
+
+``` sql
+SELECT continent, name, area FROM world x
+  WHERE area >= ALL
+    (SELECT area FROM world y
+        WHERE y.continent=x.continent)
+```
+
+#### 8. First country of each continent (alphabetically)
+List each continent and the name of the country that comes first alphabetically.
+
+``` sql
+SELECT continent, name
+FROM world x
+  WHERE name <= ALL
+    (SELECT name
+     FROM world y
+     WHERE y.continent=x.continent);
+```
+
+### Difficult Questions That Utilize Techniques Not Covered In Prior Sections
+
+#### 9.
+Find the continents where all countries have a population <= 25000000. Then find the names of the countries associated with these continents. Show name, continent and population.
+
+``` sql
+SELECT name, continent, population
+FROM world x
+WHERE 25000000 > ALL(
+  SELECT population
+  FROM world y
+  WHERE x.continent = y.continent
+    AND population > 0
+);
+```
+
+#### 10.
+Some countries have populations more than three times that of any of their neighbours (in the same continent). Give the countries and continents.
+
+``` sql
+SELECT name, continent
+FROM world x
+WHERE population > ALL(
+  SELECT population*3
+  FROM world y
+  WHERE x.continent = y.continent
+  AND population > 0
+  AND y.name != x.name
+);
+```
