@@ -3,7 +3,9 @@
 This repo contains all of the solutions for the SQL Solo curriculum.
 
 Link: [sqlzoo](https://www.sqlzoo.net)
+
 Author: Rohan Sundar
+
 Github: [rsundar](https://www.github.com/rsundar)
 
 ## SELECT Basics Solutions
