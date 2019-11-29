@@ -2,9 +2,9 @@
 
 This repo contains all of the solutions for the SQL Solo curriculum.
 
-Link: (sqlzoo)[https://www.sqlzoo.net]
+Link: [sqlzoo](https://www.sqlzoo.net)
 Author: Rohan Sundar
-Github: (rsundar)[https://www.github.com/rsundar]
+Github: [rsundar](https://www.github.com/rsundar)
 
 ### SELECT Basics
 [sqlzoo.net/wiki/SELECT_basics](sqlzoo.net/wiki/SELECT_basics)
@@ -38,6 +38,8 @@ Modify it to show the country and the area for countries with an area between 20
 SELECT name, area FROM world
   WHERE area BETWEEN 200000 AND 250000
 ```
+
+
 
 
 
